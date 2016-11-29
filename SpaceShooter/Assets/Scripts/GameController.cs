@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.UI;
 using System.Collections;
 
 public class GameController : MonoBehaviour
@@ -10,9 +11,34 @@ public class GameController : MonoBehaviour
 	public float startWait;
 	public float waveWait;
 
+	public Text scoreText;
+	public Text gameOverText;
+	public Text restartText;
+
+	private bool gameOver;
+	private bool restart;
+	private int score;
+
 	void Start () 
 	{
+		gameOver = false;
+		restart = false;
+		gameOverText.text = "";
+		restartText.text = "";
+		score = 0;
+		UpdateScore ();
 		StartCoroutine (SpawnWaves ());
+	}
+
+	void Update()
+	{
+		if (restart)
+		{
+			if (Input.GetKeyDown (KeyCode.R)) 
+			{
+				Application.LoadLevel (Application.loadedLevel);
+			}
+		}
 	}
 
 	IEnumerator SpawnWaves ()
@@ -28,6 +54,30 @@ public class GameController : MonoBehaviour
 				yield return new WaitForSeconds (spawnWait);
 			}
 			yield return new WaitForSeconds (waveWait);
+
+			if (gameOver) 
+			{
+				restartText.text = "Press 'R' to restart";
+				restart = true;
+				break;
+			}
 		}
+	}
+
+	public void AddScore(int newScoreValue)
+	{
+		score = score + newScoreValue;
+		UpdateScore ();
+	}
+
+	void UpdateScore()
+	{
+		scoreText.text = "Score: " + score;
+	}
+
+	public void GameOver()
+	{
+		gameOverText.text = "Game Over!";
+		gameOver = true;
 	}
 }
